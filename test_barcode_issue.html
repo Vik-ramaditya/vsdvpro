@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Barcode Scanner Issue</title>
+</head>
+<body>
+    <h1>Barcode Scanner Test</h1>
+    <p>Open console and click "Test Scanner" to simulate the issue</p>
+    
+    <input id="testInput" placeholder="Test typing here..." />
+    <button onclick="testScanner()">Test Scanner</button>
+    <button onclick="clearLogs()">Clear Logs</button>
+    
+    <h3>Logs:</h3>
+    <div id="logs"></div>
+
+    <script>
+        let scanBuffer = '';
+        let lastKeyTime = 0;
+        let logs = [];
+        
+        function log(message) {
+            logs.push(`${new Date().toLocaleTimeString()}: ${message}`);
+            document.getElementById('logs').innerHTML = logs.map(l => `<div>${l}</div>`).join('');
+            console.log(message);
+        }
+        
+        function clearLogs() {
+            logs = [];
+            document.getElementById('logs').innerHTML = '';
+        }
+        
+        // Simulate keyboard wedge scanner
+        function simulateKeypress(key, delay = 0) {
+            setTimeout(() => {
+                const event = new KeyboardEvent('keydown', { key: key });
+                window.dispatchEvent(event);
+            }, delay);
+        }
+        
+        function testScanner() {
+            log('🔍 Testing scanner with code: 123456789');
+            // Simulate typing "123456789" + Enter rapidly
+            ['1','2','3','4','5','6','7','8','9'].forEach((key, i) => {
+                simulateKeypress(key, i * 10); // 10ms between chars
+            });
+            simulateKeypress('Enter', 100);
+            
+            // Test what happens if we scan the same code again
+            setTimeout(() => {
+                log('🔍 Testing same code again...');
+                ['1','2','3','4','5','6','7','8','9'].forEach((key, i) => {
+                    simulateKeypress(key, i * 10);
+                });
+                simulateKeypress('Enter', 100);
+            }, 1000);
+        }
+        
+        // Keyboard wedge listener (similar to what's in the app)
+        window.addEventListener('keydown', (e) => {
+            const target = e.target;
+            const tag = target?.tagName?.toLowerCase();
+            const isTyping = tag === 'input' || tag === 'textarea' || target?.isContentEditable;
+            
+            if (isTyping) {
+                log(`⌨️ Typing in ${tag}, ignoring: ${e.key}`);
+                return;
+            }
+            
+            const now = Date.now();
+            if (now - lastKeyTime > 200) {
+                log('⏰ Resetting buffer due to timeout');
+                scanBuffer = '';
+            }
+            lastKeyTime = now;
+            
+            if (e.key === 'Enter') {
+                const code = scanBuffer.trim();
+                log(`🔍 Enter pressed, buffer: "${code}"`);
+                if (code.length >= 3) {
+                    log(`✅ Processing scanned code: ${code}`);
+                    // Simulate what applyScannedCode does
+                    // This is where the issue might be
+                }
+                scanBuffer = '';
+                return;
+            }
+            
+            if (e.key.length === 1) {
+                scanBuffer += e.key;
+                log(`📝 Buffer: "${scanBuffer}"`);
+            }
+        });
+    </script>
+</body>
+</html>

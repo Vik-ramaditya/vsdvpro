@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+  @apply border-gray-200 dark:border-gray-700;
+  }
+  body {
+  @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+  }
+  
+  /* PWA-specific styles */
+  html {
+    @apply scroll-smooth;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    touch-action: manipulation;
+    font-size: var(--device-rem, 16px);
+  }
+  
+  /* Improve touch interactions */
+  button, [role="button"], input[type="submit"], input[type="button"] {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    touch-action: manipulation;
+  }
+  
+  /* Safe area for devices with notches */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Prevent zooming on iOS */
+  input[type="text"], 
+  input[type="email"], 
+  input[type="password"], 
+  input[type="number"], 
+  input[type="tel"], 
+  input[type="url"], 
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Improve scrolling on mobile */
+  .scroll-container {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* PWA display mode styles */
+  @media (display-mode: standalone) {
+    body {
+      @apply select-none; /* Prevent text selection in PWA mode */
+    }
+    
+    /* Hide scrollbars in PWA mode for cleaner look */
+    .hide-scrollbar {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* Internet Explorer 10+ */
+    }
+    
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none; /* Safari and Chrome */
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+  @apply bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 select-none;
+  }
+  
+  .btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 active:bg-gray-400 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500 dark:text-gray-100 font-medium py-2 px-4 rounded-lg transition-colors duration-200 select-none;
+  }
+  
+  .card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6;
+  }
+  
+  .input-field {
+  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
+  }
+  
+  .table-row {
+  @apply border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150;
+  }
+  
+  /* PWA-specific components */
+  .pwa-button {
+  @apply relative overflow-hidden transform transition-all duration-200 active:scale-95;
+  }
+  
+  .pwa-card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 backdrop-blur-sm;
+  }
+  
+  .mobile-safe-area {
+  @apply safe-area-inset-top safe-area-inset-bottom safe-area-inset-left safe-area-inset-right;
+  }
+}
+
+@layer utilities {
+  /* Prevent overscroll bounce on mobile */
+  .overscroll-none {
+    overscroll-behavior: none;
+  }
+  
+  /* Touch-friendly minimum sizes */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* PWA-friendly animations */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* Fluid typography for mobile readability */
+  .text-fluid-sm { font-size: clamp(0.75rem, 0.65rem + 0.5vw, 0.875rem); }
+  .text-fluid-base { font-size: clamp(0.9rem, 0.8rem + 0.6vw, 1rem); }
+  .text-fluid-lg { font-size: clamp(1rem, 0.9rem + 0.8vw, 1.25rem); }
+
+  /* Hide scrollbars utility */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Compact table on small screens */
+  @media (max-width: 640px) {
+    .table-compact th, .table-compact td { @apply px-2 py-1 text-xs; }
+  }
+}
+
+/* Improve performance for animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Global UI transition helper - apply to containers that should smoothly transition
+   between theme changes and layout updates. Keeps duration and properties consistent. */
+.ui-transition {
+  transition-property: background-color, color, border-color, box-shadow, opacity, transform;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
+}
